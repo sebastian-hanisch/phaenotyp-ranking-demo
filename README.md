@@ -3,7 +3,7 @@
 <!-- TODO nach dem Deploy: direkt hierher den Live-Link setzen (Leerzeile davor und danach):
 **[→ Demo live ausprobieren](https://sebastianhanisch-phaenotyp-ranking-demo.streamlit.app/)** -->
 
-Fall-Demo für die Website „Sebastian Hanisch – Operations Research und Machine Learning“ (Entscheidungsanalyse und Machine Learning). Aus wenigen **dokumentierten Merkmalen** (Symptomen) wird eine Rangliste möglicher **seltener Krankheiten** erstellt; die Demo vergleicht sieben Ranker (fünf davon in den Abbildungen, alle in den Tabellen) mit dem **Orakel** und zeigt, woran die Güte der Rangliste hängt: an der **Wissensbasis** (wie viele Fälle je Krankheit bekannt sind), an **Dokumentationslücken** (nicht aufgeschrieben, nicht geprüft, falsch aufgeschrieben) und an der Zahl der Merkmale je Patient.
+Demo zum **Erkennen unter Unsicherheit** für die Website „Sebastian Hanisch – Operations Research und Machine Learning“. Aus wenigen **dokumentierten Merkmalen** (Symptomen) wird eine Rangliste möglicher **seltener Krankheiten** erstellt; die Demo vergleicht sieben Ranker (fünf davon in den Abbildungen, alle in den Tabellen) mit dem **Orakel** und zeigt, woran die Güte der Rangliste hängt: an der **Wissensbasis** (wie viele Fälle je Krankheit bekannt sind), an **Dokumentationslücken** (nicht aufgeschrieben, nicht geprüft, falsch aufgeschrieben) und an der Zahl der Merkmale je Patient.
 
 **Lehrmodell mit erfundenen Daten, keine medizinische Beratung und keine Diagnoseempfehlung.** Welt, Krankheiten, Merkmale und alle Zahlen sind erzeugt; es gibt keine echten Patientendaten und keine echte Wissensbasis. Die Aussagen gelten für diese Welt, bei diesen Einstellungen und für die gemessene Regel jedes Rankers.
 
@@ -166,4 +166,4 @@ Gebaut mit Streamlit, Plotly, NumPy und fpdf2.
 
 ---
 
-Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). Mehr zu den Demos: [Interaktive Demos](https://sebastianhanisch.net/demos.html).
+Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). Mehr zur Reihe: [Erkennen unter Unsicherheit: Hinweis und Ursache](https://sebastianhanisch.net/konzepte-erkennen-unsicherheit.html).
