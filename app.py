@@ -45,9 +45,20 @@ Die Demo vergleicht Ranker mit dem **Orakel**, dem exakten Posterior des Erzeuge
 
 **Lehrmodell mit erfundenen Daten, keine medizinische Beratung.** Alle Aussagen gelten für diese Welt, nicht für echte Krankheiten.
 
-Weiter unten: drei **Kernfragen** und der Expander **🔧 Wie wir das erreichen – vollständiger Methodenvergleich**.
+Der Expander **💬 In einfachen Worten** erzählt die Idee ohne Formeln. Weiter unten: drei **Kernfragen** und der Expander **🔧 Wie wir das erreichen – vollständiger Methodenvergleich**.
 """
 )
+
+# erklaerseite:einfach:start (erzeugt von tools/set_demo_explainer.py (Website-Repo) aus tools/content/explainers/phaenotyp-ranking-erklaert.json, nicht von Hand ändern)
+with st.expander("💬 In einfachen Worten"):
+    st.markdown(
+        """
+Ein Bestimmungsbuch für seltene Pilze nennt nach einigen notierten Merkmalen eine Rangliste möglicher Arten; die Demo tut dasselbe mit erfundenen seltenen Krankheiten. Wie gut die Rangliste ist, hängt an drei Dingen: wie viele Fälle hinter jedem Eintrag stehen, ob ein leeres Feld „nicht geprüft“ oder „nicht vorhanden“ heißt und wie viele Merkmale ein Fall überhaupt hat. Stehen hinter einem Eintrag nur wenige Fälle, schätzt das genaue Verfahren die Häufigkeiten zu grob, und eine einfache Regel kann vorn liegen. Wird nur ein Teil der Merkmale abgefragt, darf Fehlendes nicht als abwesend zählen. Die Demo zeigt das an einer **Wissensbasis** aus wenigen Fällen, vergleicht sie mit dem **Orakel**, dem besten Verfahren dieser erfundenen Welt, und wertet bei seltener Klasse aus. Alle Daten sind erfunden; es gibt keine medizinische Beratung.
+
+[Ausführlich und verständlich erklärt, mit Fachteil](https://sebastianhanisch.net/phaenotyp-ranking-erklaert.html)
+        """
+    )
+# erklaerseite:einfach:end
 
 st.caption("🔗 Die Adresszeile oben spiegelt Ihre aktuelle Konfiguration wider – einfach kopieren, um ein Szenario zu teilen.")
 
@@ -90,7 +101,7 @@ st.caption(f"Diese Messung: {len(m.runs)} Welten × {m.n_patients} Patienten (Zu
            "Ein einzelner Patient belegt nichts. Die Verdikte unter den Kernfragen 1 und 2 rechnen live aus dieser Messung (gepaart über die Welten); die Abbildungen und Tabellen der Kernfragen stammen aus der vorgerechneten Messreihe.")
 UI.metrics_row(settings, kz, few)
 st.plotly_chart(V.fig_recall(kz["summary"]), width="stretch", key="main_chart", config=V.CONFIG)
-st.caption("Recall@k: Anteil der Patienten, bei denen die wahre Krankheit unter den ersten k der Rangliste steht (Gleichstände zufällig aufgelöst). "
+st.caption("Recall@k: Anteil der gerankten Patienten (mit mindestens einem dokumentierten Merkmal), bei denen die wahre Krankheit unter den ersten k der Rangliste steht (Gleichstände zufällig aufgelöst). "
            "Das Orakel ist der exakte Posterior dieser Welt, eine Obergrenze nur innerhalb dieses Modells.")
 
 if st.button("📄 PDF der Messung erstellen", key="pdf_make"):
@@ -147,9 +158,9 @@ with st.expander("🔧 Wie wir das erreichen – vollständiger Methodenvergleic
         st.markdown(UI.ranker_table(kz["summary"]))
         st.markdown(
             "- **Orakel:** exakter Posterior des Erzeugers; kennt die wahren Häufigkeiten, das wahre Vorab, die Abdeckung und die falschen Einträge.\n"
-            "- **Naive Bayes (Laplace-Glättung):** log P(d) plus für jedes Merkmal log g beziehungsweise log (1 − g); nicht Dokumentiertes zählt als abwesend; die Häufigkeiten g sind mit Laplace-Glättung geschätzt.\n"
-            "- **Naive Bayes (Schrumpfung 3 und 10):** dasselbe mit Häufigkeiten, die zum Merkmalsmittel geschrumpft sind (Pseudozählung 3 beziehungsweise 10); bei bekannter Wissensbasis gleich der Laplace-Variante.\n"
-            "- **Naive Bayes ohne Vorab:** die Laplace-Variante ohne den Vorab-Term.\n"
+            "- **Naive Bayes (Add-½-Glättung):** log P(d) plus für jedes Merkmal log g beziehungsweise log (1 − g); nicht Dokumentiertes zählt als abwesend; die Häufigkeiten g sind mit Add-½-Glättung geschätzt (zu jeder Zählung wird 0,5 addiert).\n"
+            "- **Naive Bayes (Schrumpfung 3 und 10):** dasselbe mit Häufigkeiten, die zum Merkmalsmittel geschrumpft sind (Pseudozählung 3 beziehungsweise 10); bei bekannter Wissensbasis gleich der Variante mit Add-½-Glättung.\n"
+            "- **Naive Bayes ohne Vorab:** die Variante mit Add-½-Glättung ohne den Vorab-Term.\n"
             "- **Nur dokumentierte Merkmale:** nur dokumentierte Merkmale zählen, Abwesenheit ist keine Evidenz.\n"
             "- **Häufigkeit × Informationsgehalt:** Summe über dokumentierte Merkmale von Häufigkeit mal Informationsgehalt (seltene Merkmale zählen mehr).\n"
             "- **Zahl Übereinstimmungen:** wie viele dokumentierte Merkmale das Profil überhaupt kennt (Häufigkeit über 0,05); bei Gleichstand zufällige Reihenfolge."
@@ -166,9 +177,9 @@ with st.expander("🔧 Wie wir das erreichen – vollständiger Methodenvergleic
         c = cells[RES.BASE.key()]
         rows_w.append("| bekannt | " + " | ".join(ev.pct(RES.pooled(c, r)) for r in spalten) + " |")
         st.markdown("Recall@5 in %, vorgerechnet (Mittel der beiden Mengen, zehn Welten):\n\n" + "\n".join(rows_w))
-        st.caption("Die drei Naive-Bayes-Varianten nutzen dieselben Fälle und unterscheiden sich nur in der Schätzung der Häufigkeiten: Laplace-Glättung (0,5 je Seite) oder Schrumpfung zum Merkmalsmittel mit Pseudozählung 3 beziehungsweise 10 "
-                   "(gesetzt, nicht abgestimmt). Bei 1 und 3 Fällen liegt mit Laplace eine einfache Regel vor Naive Bayes, mit Schrumpfung liegt Naive Bayes vor ihr; bei 1 und 3 Fällen ist die Schrumpfung 3 besser als Laplace, "
-                   "bei 30 Fällen ist Laplace besser als Schrumpfung 3. Keine Schätzung gewinnt überall.")
+        st.caption("Die drei Naive-Bayes-Varianten nutzen dieselben Fälle und unterscheiden sich nur in der Schätzung der Häufigkeiten: Add-½-Glättung (0,5 je Zählung) oder Schrumpfung zum Merkmalsmittel mit Pseudozählung 3 beziehungsweise 10 "
+                   "(gesetzt, nicht abgestimmt). Bei 1 und 3 Fällen liegt mit Add-½ eine einfache Regel vor Naive Bayes, mit Schrumpfung liegt Naive Bayes vor ihr; bei 1 und 3 Fällen ist die Schrumpfung 3 besser als Add-½, "
+                   "bei 30 Fällen ist Add-½ besser als Schrumpfung 3. Keine Schätzung gewinnt überall.")
     with tab_n:
         st.markdown("**Nicht geprüft ist nicht abwesend.** Naive Bayes liest jedes Merkmal, das nicht in der Liste steht, als abwesend. Wurde es aber nie abgefragt, ist das ein Fehlschluss; "
                     "das Orakel kennt die Maske der geprüften Merkmale und lässt nicht Geprüftes aus.")
@@ -186,7 +197,7 @@ with st.expander("🔧 Wie wir das erreichen – vollständiger Methodenvergleic
         st.markdown(f"Mittlere genannte Wahrscheinlichkeit des Spitzenreiters: **{ev.pct(cal['mean_p'])} %**, tatsächliche Trefferquote: **{ev.pct(cal['hit'])} %** (diese Messung).")
         st.caption("Eine Rangliste ist keine Wahrscheinlichkeit: Nur wenn die Wissensbasis stimmt, alle Merkmale geprüft wurden und keine falschen Einträge vorkommen, passen genannte Wahrscheinlichkeit "
                    "und Trefferquote zusammen (bei Abdeckung 0,2 und bei fünf Prozent falschen Einträgen nennt Naive Bayes in dieser Welt deutlich mehr, als es trifft). Bei geschätzter Wissensbasis "
-                   "kann die Abweichung in beide Richtungen gehen; sie hängt an der Schätzung der Häufigkeiten (bei 3 Fällen: Laplace nennt weniger, als es trifft, Schrumpfung 3 mehr; gemessen, siehe README).")
+                   "kann die Abweichung in beide Richtungen gehen; sie hängt an der Schätzung der Häufigkeiten (bei 3 Fällen: Add-½ und Schrumpfung 10 nennen weniger, als sie treffen, Schrumpfung 3 mehr; gemessen, siehe README).")
     with tab_s:
         n_neg_text = f"{C.LIVE_N_NEG:,}".replace(",", ".")
         st.markdown(f"Gleiche Trennschärfe, andere Mischung der Klassen: eine **Prävalenz** wählen und live nachrechnen ({C.LIVE_REPS} Ziehungen, {n_neg_text} Negative; vorgerechnet mit mehr Ziehungen siehe oben).")
@@ -209,7 +220,7 @@ with st.expander("Wie funktioniert diese Demo?"):
 
 **Patienten.** Krankheit nach dem Vorab, Merkmale unabhängig gegeben die Krankheit. Patienten ohne jedes dokumentierte Merkmal werden nicht gerankt: in den vorgerechneten Zellen bleiben 97,8 Prozent der Patienten in der Voreinstellung, 93,9 Prozent bei Dokumentationsverlust 0,6, 84,9 Prozent bei Abdeckung 0,5 und 53,4 Prozent bei Abdeckung 0,2; die Recall-Werte gelten für die gerankten Patienten. Mit Abdeckung unter 1 wird nur ein Teil der Merkmale geprüft.
 
-**Wissensbasis.** Entweder die wahren Häufigkeiten, oder Häufigkeiten aus gezogenen Fällen je Krankheit. Aus denselben Fällen entstehen drei Schätzungen: Laplace-Glättung sowie Schrumpfung zum Merkmalsmittel mit Pseudozählung 3 und 10; sie speisen drei Naive-Bayes-Varianten nebeneinander.
+**Wissensbasis.** Entweder die wahren Häufigkeiten, oder Häufigkeiten aus gezogenen Fällen je Krankheit. Aus denselben Fällen entstehen drei Schätzungen: Add-½-Glättung sowie Schrumpfung zum Merkmalsmittel mit Pseudozählung 3 und 10; sie speisen drei Naive-Bayes-Varianten nebeneinander.
 
 **Messung.** Je Einstellung {C.N_WORLDS} Welten mit je {C.N_PATIENTS} Patienten (SplitMix64: der Zufallsstrom ist auf jeder Plattform derselbe; Gleitkomma-Rundung kann die Recall-Werte um unter 0,6 Punkte verschieben). Der Recall ist ein Erwartungswert über die zufällige Auflösung von Gleichständen.
 
@@ -234,7 +245,7 @@ with st.expander("⚠️ Annahmen, Grenzen und bekannte Probleme"):
 Die Wissensbasis wird aus Fällen derselben Welt geschätzt.
 
 **Grenzen.** Das Orakel gehört zum Erzeuger und ist nur in diesem Modell eine Obergrenze. Fünf Welten je Messung: die Streuung über die Welten ist ausgewiesen, Unterschiede unter zwei Standardfehlern werden nicht gedeutet.
-Die Schätzungen (Laplace, Schrumpfung 3 und 10) sind gesetzt und nicht abgestimmt. Der Abschnitt „seltene Klasse“ nutzt Scores mit bekannter AUC, keine Ranker aus dieser Welt.
+Die Schätzungen (Add-½-Glättung, Schrumpfung 3 und 10) sind gesetzt und nicht abgestimmt. Der Abschnitt „seltene Klasse“ nutzt Scores mit bekannter AUC, keine Ranker aus dieser Welt.
 
 **Bekannte Probleme und Unsicherheiten.** Nur an erfundenen Welten geprüft; keine echten Patientendaten, keine echte Wissensbasis (HPO, Orphanet), keine Ontologie. Die Aussagen gelten für die gemessenen Zellen
 und die gemessene Regel jedes Rankers, nicht für die Methodenklasse. **Keine medizinische Beratung, keine Diagnoseempfehlung.**
@@ -242,33 +253,47 @@ und die gemessene Regel jedes Rankers, nicht für die Methodenklasse. **Keine me
     )
 
 with st.expander("📐 Mathematische Formulierung"):
-    st.markdown("**Lesehilfe.** Gegeben: die dokumentierten Merkmale $x$ eines Patienten, die Wissensbasis (Häufigkeiten $g$) und das Vorab $\\pi$. Gesucht: eine Rangliste der Krankheiten $d$.")
+    # erklaerseite:lesehilfe:start (erzeugt von tools/set_demo_explainer.py (Website-Repo) aus tools/content/explainers/phaenotyp-ranking-erklaert.json, nicht von Hand ändern)
     st.markdown(
-        "| Symbol | Bedeutung |\n|---|---|\n"
-        "| $d$, $s$ | Krankheit, Merkmal |\n"
-        "| $x_s \\in \\{0,1\\}$ | Merkmal $s$ ist dokumentiert |\n"
-        "| $m_s \\in \\{0,1\\}$ | Merkmal $s$ wurde geprüft |\n"
-        "| $\\pi_d$ | Vorab der Krankheit $d$ |\n"
-        "| $f_{ds}$ | Häufigkeit des Profilmerkmals bei Krankheit $d$ |\n"
-        "| $q$ | Dokumentationsverlust |\n"
-        "| $b_s$ | Hintergrundrate des Merkmals $s$ |\n"
-        "| $g_{ds}$ | Wahrscheinlichkeit, dass $s$ bei Krankheit $d$ dokumentiert wird |\n"
-        "| $\\hat g_{ds}$ | aus $n$ Fällen geschätzte Häufigkeit |"
+        r"""
+**Lesehilfe.** Gegeben: die dokumentierten Merkmale $x$ eines Patienten, die Wissensbasis (Häufigkeiten $g$) und das Vorab $\pi$. Gesucht: eine Rangliste der Krankheiten $d$.
+
+| Symbol | Bedeutung |
+|---|---|
+| $d$, $s$ | Krankheit, Merkmal |
+| $x_s \in \{0,1\}$ | Merkmal $s$ ist dokumentiert |
+| $z_s \in \{0,1\}$ | Merkmal $s$ wurde geprüft |
+| $\pi_d$ | Vorab der Krankheit $d$ |
+| $f_{ds}$ | Häufigkeit des Profilmerkmals bei Krankheit $d$ |
+| $q$ | Dokumentationsverlust |
+| $b_s$ | Hintergrundrate des Merkmals $s$ |
+| $g_{ds}$ | Wahrscheinlichkeit, dass $s$ bei Krankheit $d$ dokumentiert wird |
+| $g'_{ds}$ | $g_{ds}$ mit falschen Einträgen: $1 - (1 - g_{ds})(1 - r)$ (nur das Orakel kennt sie) |
+| $r$ | Rate falscher Einträge (0 / 0,02 / 0,05) |
+| $\hat g_{ds}$ | aus $n$ Fällen geschätzte Häufigkeit |
+| $c_{ds}$ | Zahl der Fälle (von $n$), in denen das Merkmal bei Krankheit $d$ dokumentiert war |
+| $\bar m_s$ | Merkmalsmittel: Mittel der Anteile $c_{ds}/n$ über alle Krankheiten, mindestens 0,001 |
+| $a$ | Pseudozählung der Schrumpfung (3 oder 10) |
+| $\alpha$ | Abdeckung: Anteil der geprüften Merkmale |
+
+[Schritt für Schritt erklärt, mit Herleitung und Literatur](https://sebastianhanisch.net/phaenotyp-ranking-erklaert.html#fachleute)
+        """
     )
+    # erklaerseite:lesehilfe:end
     st.markdown("Erzeuger (Dokumentationswahrscheinlichkeit, mit $b_s = 0{,}01 + 0{,}2\\,(w_s / w_{\\max})^2$, $w_s \\propto \\mathrm{Rang}^{-0{,}8}$):")
     st.latex(r"g_{ds} = 1 - \bigl(1 - f_{ds}(1 - q)\bigr)\bigl(1 - b_s\bigr)")
-    st.markdown("Orakel (exakter Posterior, nur geprüfte Merkmale):")
-    st.latex(r"P(d \mid x, m) \;\propto\; \pi_d \prod_{s:\, m_s = 1} g_{ds}^{\,x_s}\,\bigl(1 - g_{ds}\bigr)^{1 - x_s}")
+    st.markdown("Orakel (exakter Posterior, nur geprüfte Merkmale, $z_s = 1$; mit der Rate $r$ falscher Einträge steht $g'_{ds} = 1 - (1 - g_{ds})(1 - r)$, in der Voreinstellung ist $r = 0$ und $g' = g$):")
+    st.latex(r"P(d \mid x, z) \;\propto\; \pi_d \prod_{s:\, z_s = 1} {g'_{ds}}^{\,x_s}\,\bigl(1 - g'_{ds}\bigr)^{1 - x_s}")
     st.markdown("Naive Bayes (alle Merkmale zählen, Nicht-Dokumentiertes als abwesend, mit geschätzten $\\hat g$):")
     st.latex(r"\log P(d \mid x) = \log \pi_d + \sum_{s} \bigl[x_s \log \hat g_{ds} + (1 - x_s)\log(1 - \hat g_{ds})\bigr] + \text{const.}")
-    st.markdown("Schätzung aus $n$ Fällen (Zahl $c_{ds}$ der Fälle mit dokumentiertem Merkmal), Laplace und Schrumpfung zum Merkmalsmittel $\\bar m_s$ mit Pseudozählung $a$:")
+    st.markdown("Schätzung aus $n$ Fällen (Zahl $c_{ds}$ der Fälle mit dokumentiertem Merkmal): Add-½-Glättung (zu jeder Zählung wird 0,5 addiert, nicht die klassische Laplace-Glättung) und Schrumpfung zum Merkmalsmittel $\\bar m_s$ (Mittel der Anteile $c_{ds}/n$ über alle Krankheiten, mindestens 0,001) mit Pseudozählung $a$:")
     st.latex(r"\hat g_{ds} = \frac{c_{ds} + 0{,}5}{n + 1}, \qquad \hat g_{ds} = \frac{c_{ds} + a\,\bar m_s}{n + a}")
     st.markdown("Häufigkeit × Informationsgehalt ($\\bar g_s$ = Mittel von $\\hat g_{ds}$ über alle Krankheiten; der Informationsgehalt wird um sein Minimum verschoben, sodass der kleinste Wert 0,001 ist):")
     st.latex(r"\mathrm{IC}_s = -\ln \bar g_s - \min_{s'}\bigl(-\ln \bar g_{s'}\bigr) + 0{,}001, \qquad \mathrm{score}(d) = \sum_s x_s\,\hat g_{ds}\,\mathrm{IC}_s")
     st.markdown("Recall@$k$ mit zufälliger Auflösung von Gleichständen ($r_i$ kleinster Rang der wahren Krankheit, $t_i$ Zahl der Gleichstände mit ihr):")
     st.latex(r"\mathrm{Recall@}k = \frac{1}{N}\sum_{i=1}^{N} \min\Bigl(1,\; \max\Bigl(0,\; \frac{k - r_i + 1}{t_i + 1}\Bigr)\Bigr)")
-    st.caption("Der Formelblock zeigt Erzeuger, Orakel, Naive Bayes, Schätzung, Häufigkeit × Informationsgehalt und Recall. Nicht im Block stehen: die Varianten Naive Bayes ohne Vorab, nur dokumentierte Merkmale und Zahl Übereinstimmungen, "
-               "die Untergrenze 10⁻⁶ der Häufigkeiten in den Logarithmen, die Untergrenze 0,001 des Merkmalsmittels bei der Schrumpfung, die falschen Einträge (Dokumentationswahrscheinlichkeit 1 − (1 − g)(1 − Rate)) und die Zufallsziehungen "
+    st.caption("Der Formelblock zeigt Erzeuger, Orakel, Naive Bayes, Schätzung, Häufigkeit × Informationsgehalt und Recall. Nicht in den Gleichungen stehen: die Varianten Naive Bayes ohne Vorab, nur dokumentierte Merkmale und Zahl Übereinstimmungen, "
+               "die Untergrenze 10⁻⁶ der Häufigkeiten in den Logarithmen und die Zufallsziehungen (die Untergrenze 0,001 des Merkmalsmittels steht im Text neben den Gleichungen) "
                "(Profilmerkmale ohne Zurücklegen proportional zur Beliebtheit, Häufigkeiten 0,95 / 0,6 / 0,3 / 0,1 "
                "mit den Anteilen 15 / 25 / 35 / 25 Prozent); sie stehen im README und im Code.")
 

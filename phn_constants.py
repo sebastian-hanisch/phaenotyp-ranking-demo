@@ -8,7 +8,7 @@ FREQ_P = (0.15, 0.25, 0.35, 0.25)  # Anteile dieser Häufigkeiten an den Profilm
 K_MIN_FEAT, K_MAX_FEAT = 4, 12     # Zahl der Profilmerkmale je Krankheit (gleichverteilt, beide Grenzen inklusive)
 BG_BASE, BG_SLOPE, BG_POWER = 0.01, 0.2, 2   # Hintergrundrate eines Merkmals = 0,01 + 0,2 * (Beliebtheit / größte Beliebtheit)^2
 PRIOR_ZIPF_EXP = 1.0          # Vorab "nach Häufigkeit": Zipf-Exponent 1
-LAPLACE_A = 0.5               # Glättung je Seite bei geschätzter Wissensbasis
+LAPLACE_A = 0.5               # Add-½-Glättung (je Seite 0,5; Name aus früheren Fassungen) bei geschätzter Wissensbasis
 PROB_FLOOR = 1e-6             # Untergrenze der Häufigkeiten im Logarithmus
 SIMPLE_THRESHOLD = 0.05       # "Zahl Übereinstimmungen" zählt Merkmale mit geschätzter Häufigkeit über dieser Schwelle
 
@@ -23,7 +23,7 @@ SHRINK_A = (3, 10)            # Pseudozählungen der Schrumpfung zum Merkmalsmit
 SIMPLE_RANKERS = ("IC", "OV")  # "einfache Regeln" im Sinn der Texte
 RANKER_NAMES = {
     "O": "Orakel (exakter Posterior)",
-    "NB": "Naive Bayes (Laplace-Glättung)",
+    "NB": "Naive Bayes (Add-½-Glättung)",
     "NS3": "Naive Bayes (Schrumpfung 3)",
     "NS10": "Naive Bayes (Schrumpfung 10)",
     "NB0": "Naive Bayes ohne Vorab",

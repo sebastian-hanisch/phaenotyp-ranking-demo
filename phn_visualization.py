@@ -42,7 +42,7 @@ def fig_kb_curve(current_kb: int) -> go.Figure:
         out.append(RES.pooled(cells[RES.BASE.key()], r))
         return out
 
-    series = [("O", "Orakel", C.COLOR_O), ("NB", "Naive Bayes (Laplace)", C.COLOR_NB), ("NS3", "Naive Bayes (Schrumpfung 3)", C.RANKER_COLORS["NS3"]),
+    series = [("O", "Orakel", C.COLOR_O), ("NB", "Naive Bayes (Add-½)", C.COLOR_NB), ("NS3", "Naive Bayes (Schrumpfung 3)", C.RANKER_COLORS["NS3"]),
               ("IC", "Häufigkeit × Informationsgehalt", C.COLOR_IC), ("OV", "Zahl Übereinstimmungen", C.COLOR_OV)]
     fig = go.Figure()
     for r, name, color in series:

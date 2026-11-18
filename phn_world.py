@@ -101,7 +101,7 @@ def estimate_counts(world: World, seed: int, n_case: int) -> np.ndarray:
 
 
 def laplace_profile(counts: np.ndarray, n_case: int, a: float = C.LAPLACE_A) -> np.ndarray:
-    """Geschätzte Häufigkeit mit Glättung a je Seite: (Zahl + a) / (n + 2a)."""
+    """Geschätzte Häufigkeit mit Add-a-Glättung je Seite: (Zahl + a) / (n + 2a); mit a = 0,5 die Add-½-Glättung (nicht die klassische Laplace-Glättung mit a = 1)."""
     return (counts + a) / (n_case + 2.0 * a)
 
 
@@ -113,7 +113,7 @@ def shrink_profile(counts: np.ndarray, n_case: int, a: float) -> np.ndarray:
 
 def knowledge_bases(world: World, seed: int, kb: int) -> dict:
     """Wissensbasen, die die Ranker benutzen: kb = 0 die wahren Häufigkeiten (für alle dieselben), sonst aus kb Fällen geschätzt, und zwar
-    mit Laplace-Glättung ("lap") und mit Schrumpfung zum Merkmalsmittel mit den Pseudozählungen aus C.SHRINK_A ("s3", "s10"); alle aus denselben Fällen."""
+    mit Add-½-Glättung ("lap") und mit Schrumpfung zum Merkmalsmittel mit den Pseudozählungen aus C.SHRINK_A ("s3", "s10"); alle aus denselben Fällen."""
     if kb == 0:
         return {"lap": world.g, "s3": world.g, "s10": world.g}
     counts = estimate_counts(world, seed, kb)

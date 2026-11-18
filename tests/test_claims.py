@@ -307,7 +307,7 @@ def test_kalibrierung_die_richtung_haengt_an_der_schaetzung_und_an_den_luecken()
     assert near(a2, (23.4, 14.3)) and near(fp5, (58.7, 33.4)) and near(q6, (28.4, 28.0))
     assert a2[0] > a2[1] + 5 and fp5[0] > fp5[1] + 10 and abs(q6[0] - q6[1]) < 1.0    # überkonfident bei Lücken in Abdeckung und bei falschen Einträgen, kalibriert bei reinem Verlust
     assert near(calibration_pooled("O", a=0.2), (17.6, 17.4)) and near(calibration_pooled("O", fp=0.05), (35.1, 34.8))
-    for text in ("Laplace 18,6 / 25,6", "Schrumpfung 3 35,3 / 32,7", "Schrumpfung 10 16,0 / 32,5", "23,4 bei 14,3", "58,7 bei 33,4", "28,4 bei 28,0", "17,6 bei 17,4", "35,1 bei 34,8"):
+    for text in ("Add-½ 18,6 / 25,6 (unterkonfident)", "Schrumpfung 3 35,3 / 32,7 (überkonfident)", "Schrumpfung 10 16,0 / 32,5 (deutlich unterkonfident)", "23,4 bei 14,3", "58,7 bei 33,4", "28,4 bei 28,0", "17,6 bei 17,4", "35,1 bei 34,8"):
         assert text in README_TEXT
 
 
